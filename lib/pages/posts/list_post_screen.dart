@@ -1,9 +1,9 @@
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_api/models/post_model.dart';
 import 'package:flutter_api/services/post_service.dart';
-
+// import 'package:flutter_api/pages/posts/detail_posts_screen.dart';
+// import 'package:flutter_api/pages/posts/create_post_screen.dart';
 
 class ListPostScreen extends StatefulWidget {
   const ListPostScreen({super.key});
@@ -49,6 +49,19 @@ class _ListPostScreenState extends State<ListPostScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Posts'),
+        // actions: [
+        //   IconButton(onPressed: _refreshPosts, icon: const Icon(Icons.refresh)),
+        //   IconButton(
+        //     onPressed: () async {
+        //       final result = await Navigator.push(
+        //         context,
+        //         MaterialPageRoute(builder: (_) => const CreatePostScreen()),
+        //       );
+        //       if (result == true) _refreshPosts();
+        //     },
+        //     icon: const Icon(Icons.add),
+        //   ),
+        // ],
       ),
       body: FutureBuilder<PostModel>(
         future: _futurePosts,

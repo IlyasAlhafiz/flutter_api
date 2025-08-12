@@ -1,73 +1,77 @@
+// To parse this JSON data, do
+//
+//     final postModel = postModelFromJson(jsonString);
+
+import 'dart:convert';
+
+PostModel postModelFromJson(String str) => PostModel.fromJson(json.decode(str));
+
+String postModelToJson(PostModel data) => json.encode(data.toJson());
+
 class PostModel {
-  bool? success;
-  List<Data>? data;
-  String? message;
+    bool? success;
+    List<DataPost>? data;
+    String? message;
 
-  PostModel({this.success, this.data, this.message});
+    PostModel({
+        this.success,
+        this.data,
+        this.message,
+    });
 
-  PostModel.fromJson(Map<String, dynamic> json) {
-    success = json['success'];
-    if (json['data'] != null) {
-      data = <Data>[];
-      json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
-      });
-    }
-    message = json['message'];
-  }
+    factory PostModel.fromJson(Map<String, dynamic> json) => PostModel(
+        success: json["success"],
+        data: json["data"] == null ? [] : List<DataPost>.from(json["data"]!.map((x) => DataPost.fromJson(x))),
+        message: json["message"],
+    );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
-    }
-    data['message'] = this.message;
-    return data;
-  }
+    Map<String, dynamic> toJson() => {
+        "success": success,
+        "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toJson())),
+        "message": message,
+    };
 }
 
-class Data {
-  int? id;
-  String? title;
-  String? content;
-  String? slug;
-  int? status;
-  String? foto;
-  String? createdAt;
-  String? updatedAt;
+class DataPost {
+    int? id;
+    String? title;
+    String? content;
+    String? slug;
+    int? status;
+    String? foto;
+    DateTime? createdAt;
+    DateTime? updatedAt;
 
-  Data(
-      {this.id,
-      this.title,
-      this.content,
-      this.slug,
-      this.status,
-      this.foto,
-      this.createdAt,
-      this.updatedAt});
+    DataPost({
+        this.id,
+        this.title,
+        this.content,
+        this.slug,
+        this.status,
+        this.foto,
+        this.createdAt,
+        this.updatedAt,
+    });
 
-  Data.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    title = json['title'];
-    content = json['content'];
-    slug = json['slug'];
-    status = json['status'];
-    foto = json['foto'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-  }
+    factory DataPost.fromJson(Map<String, dynamic> json) => DataPost(
+        id: json["id"],
+        title: json["title"],
+        content: json["content"],
+        slug: json["slug"],
+        status: json["status"],
+        foto: json["foto"],
+        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+    );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['content'] = this.content;
-    data['slug'] = this.slug;
-    data['status'] = this.status;
-    data['foto'] = this.foto;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    return data;
-  }
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "title": title,
+        "content": content,
+        "slug": slug,
+        "status": status,
+        "foto": foto,
+        "created_at": createdAt?.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
+    };
 }
