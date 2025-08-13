@@ -4,9 +4,9 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_api/models/post_model.dart';
+import 'package:flutter_api/models/buku_model.dart';
 
-class PostService {
+class BukuService {
   static const String baseUrl = 'http://127.0.0.1:8000/api/posts';
 
   static Future<String?> getToken() async {
@@ -15,7 +15,7 @@ class PostService {
   }
 
   // Get all posts
-  static Future<PostModel> listPosts() async {
+  static Future<BukuModel> listBuku() async {
     final token = await getToken();
     final response = await http.get(
       Uri.parse(baseUrl),
@@ -23,14 +23,14 @@ class PostService {
     );
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
-      return PostModel.fromJson(json);
+      return BukuModel.fromJson(json);
     } else {
-      throw Exception('Failed to load posts');
+      throw Exception('Failed to load Buku');
     }
   }
 
   // Get single post by ID
-  static Future<DataPost> showPost(int id) async {
+  static Future<DataBuku> showBuku(int id) async {
     final token = await getToken();
     final response = await http.get(
       Uri.parse('$baseUrl/$id'),
@@ -39,26 +39,32 @@ class PostService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return DataPost.fromJson(data['data']);
+      return DataBuku.fromJson(data['data']);
     } else {
       throw Exception('Failed to load post');
     }
   }
 
   // Create new post
-  static Future<bool> createPost(
-    String title,
-    String content,
-    int status,
-    Uint8List? imageBytes,
-    String? imageName,
+  static Future<bool> createBuku(
+    String kodeBuku;
+    String judul;
+    String penulis;
+    String penerbit;
+    int tahunTerbit;
+    int stok;
+    int kategoriId;
+    Uint8List imageBytes,
+    String imageName,
   ) async {
     final token = await getToken();
     final uri = Uri.parse(baseUrl);
     final request = http.MultipartRequest('POST', uri);
 
-    request.fields['title'] = title;
-    request.fields['content'] = content;
+    request.fields['kodebuku'] = kodeBuku;
+    request.fields['judul'] = judul;
+    request.fields['penulis'] = penulis;
+    request.fields['penulis'] = penerbit;
     request.fields['status'] = status.toString();
 
     if (imageBytes != null && imageName != null) {
@@ -79,7 +85,7 @@ class PostService {
   }
 
   // Update existing post
-  static Future<bool> updatePost(
+  static Future<bool> updateBuku(
     int id,
     String title,
     String content,
@@ -115,7 +121,7 @@ class PostService {
   }
 
   // Delete post
-  static Future<bool> deletePost(int id) async {
+  static Future<bool> deleteBuku(int id) async {
     final token = await getToken();
     final response = await http.delete(
       Uri.parse('$baseUrl/$id'),

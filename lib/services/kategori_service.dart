@@ -4,10 +4,10 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_api/models/post_model.dart';
+import 'package:flutter_api/models/kategori_model.dart';
 
-class PostService {
-  static const String baseUrl = 'http://127.0.0.1:8000/api/posts';
+class KategoriService {
+  static const String baseUrl = 'http://127.0.0.1:8000/api/kategoris';
 
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -15,7 +15,7 @@ class PostService {
   }
 
   // Get all posts
-  static Future<PostModel> listPosts() async {
+  static Future<KategoriModel> listPosts() async {
     final token = await getToken();
     final response = await http.get(
       Uri.parse(baseUrl),
@@ -23,14 +23,14 @@ class PostService {
     );
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
-      return PostModel.fromJson(json);
+      return KategoriModel.fromJson(json);
     } else {
       throw Exception('Failed to load posts');
     }
   }
 
   // Get single post by ID
-  static Future<DataPost> showPost(int id) async {
+  static Future<DataKategori> showPost(int id) async {
     final token = await getToken();
     final response = await http.get(
       Uri.parse('$baseUrl/$id'),
@@ -39,7 +39,7 @@ class PostService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return DataPost.fromJson(data['data']);
+      return DataKategori.fromJson(data['data']);
     } else {
       throw Exception('Failed to load post');
     }
@@ -47,30 +47,13 @@ class PostService {
 
   // Create new post
   static Future<bool> createPost(
-    String title,
-    String content,
-    int status,
-    Uint8List? imageBytes,
-    String? imageName,
+    String nama,
   ) async {
     final token = await getToken();
     final uri = Uri.parse(baseUrl);
     final request = http.MultipartRequest('POST', uri);
 
-    request.fields['title'] = title;
-    request.fields['content'] = content;
-    request.fields['status'] = status.toString();
-
-    if (imageBytes != null && imageName != null) {
-      request.files.add(
-        http.MultipartFile.fromBytes(
-          'foto',
-          imageBytes,
-          filename: imageName,
-          contentType: MediaType('image', 'jpeg'),
-        ),
-      );
-    }
+    request.fields['nama'] = nama;
 
     request.headers['Authorization'] = 'Bearer $token';
 
@@ -81,11 +64,7 @@ class PostService {
   // Update existing post
   static Future<bool> updatePost(
     int id,
-    String title,
-    String content,
-    int status,
-    Uint8List? imageBytes,
-    String? imageName,
+    String nama,
   ) async {
     final token = await getToken();
     var request = http.MultipartRequest(
@@ -93,20 +72,7 @@ class PostService {
       Uri.parse('$baseUrl/$id?_method=PUT'),
     );
 
-    request.fields['title'] = title;
-    request.fields['content'] = content;
-    request.fields['status'] = status.toString();
-
-    if (imageBytes != null && imageName != null) {
-      request.files.add(
-        http.MultipartFile.fromBytes(
-          'foto',
-          imageBytes,
-          filename: imageName,
-          contentType: MediaType('image', 'jpeg'),
-        ),
-      );
-    }
+    request.fields['nama'] = nama;
 
     request.headers['Authorization'] = 'Bearer $token';
 
