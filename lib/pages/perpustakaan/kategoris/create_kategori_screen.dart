@@ -1,18 +1,29 @@
-import 'dart:typed_data';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_api/models/kategori_model.dart';
 import 'package:flutter_api/services/kategori_service.dart';
+import 'package:flutter/material.dart';
 
 class CreateKategori extends StatefulWidget {
-  const CreateKategori({Key? key}) : super(key: key);
+  final DataKategori? kategori; // datum dari KategoriModel
+
+  const CreateKategori({Key? key, this.kategori}) : super(key: key);
 
   @override
-  State<CreateKategori> createState() => _CreatePostScreenState();
+  State<CreateKategori> createState() => _CreateKategoriScreenState();
 }
 
-class _CreatePostScreenState extends State<CreateKategori> {
+class _CreateKategoriScreenState extends State<CreateKategori> {
   final _formKey = GlobalKey<FormState>();
   final _namaController = TextEditingController();
+
+  bool get isEdit => widget.kategori != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (isEdit) {
+      _namaController.text = widget.kategori!.nama ?? '';
+    }
+  }
 
   @override
   void dispose() {
@@ -20,24 +31,37 @@ class _CreatePostScreenState extends State<CreateKategori> {
     super.dispose();
   }
 
-  Future<void> _createKategori() async {
+  Future<void> _saveKategori() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final success = await KategoriService.createPost(
-      _namaController.text,
-    );
+    bool success;
+    if (isEdit) {
+      // Update
+      success = await KategoriService.updateKategori(
+        widget.kategori!.id!,
+        _namaController.text,
+      );
+    } else {
+      // Create
+      success = await KategoriService.createKategori(
+        _namaController.text,
+      );
+    }
 
     if (success && mounted) {
       Navigator.pop(context, true);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Post berhasil dibuat'),
-            backgroundColor: Colors.green),
+        SnackBar(
+          content: Text(isEdit ? 'Kategori berhasil diupdate' : 'Kategori berhasil dibuat'),
+          backgroundColor: Colors.green,
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Gagal membuat post'), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text(isEdit ? 'Gagal update kategori' : 'Gagal membuat kategori'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -45,14 +69,13 @@ class _CreatePostScreenState extends State<CreateKategori> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Post')),
+      appBar: AppBar(title: Text(isEdit ? 'Edit Kategori' : 'Create Kategori')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
-              // Title
               TextFormField(
                 controller: _namaController,
                 decoration: const InputDecoration(labelText: 'Nama Kategori'),
@@ -60,22 +83,19 @@ class _CreatePostScreenState extends State<CreateKategori> {
                     v == null || v.isEmpty ? 'Nama tidak boleh kosong' : null,
               ),
               const SizedBox(height: 16),
-
-              // Submit
-
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: _createKategori,
+                  onPressed: _saveKategori,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Simpan',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  child: Text(
+                    isEdit ? 'Update' : 'Simpan',
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
               ),

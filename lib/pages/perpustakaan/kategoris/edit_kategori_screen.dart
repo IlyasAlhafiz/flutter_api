@@ -3,8 +3,8 @@ import 'package:flutter_api/models/kategori_model.dart';
 import 'package:flutter_api/services/kategori_service.dart';
 
 class EditKategori extends StatefulWidget {
-  final DataKategori post;
-  const EditKategori({Key? key, required this.post}) : super(key: key);
+  final DataKategori kategori;
+  const EditKategori({Key? key, required this.kategori}) : super(key: key);
 
   @override
   State<EditKategori> createState() => _EditKategoriState();
@@ -18,15 +18,15 @@ class _EditKategoriState extends State<EditKategori> {
   @override
   void initState() {
     super.initState();
-    _namaController = TextEditingController(text: widget.post.nama ?? '');
+    _namaController = TextEditingController(text: widget.kategori.nama ?? '');
   }
 
   Future<void> _updateKategori() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
 
-    final success = await KategoriService.updatePost(
-      widget.post.id!,
+    final success = await KategoriService.updateKategori(
+      widget.kategori.id!,
       _namaController.text,
     );
 

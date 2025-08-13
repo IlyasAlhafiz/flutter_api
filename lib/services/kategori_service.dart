@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_api/models/kategori_model.dart';
 
@@ -14,8 +12,8 @@ class KategoriService {
     return prefs.getString('token');
   }
 
-  // Get all posts
-  static Future<KategoriModel> listPosts() async {
+  // Get all kategori
+  static Future<KategoriModel> listKategoris() async {
     final token = await getToken();
     final response = await http.get(
       Uri.parse(baseUrl),
@@ -25,63 +23,40 @@ class KategoriService {
       final json = jsonDecode(response.body);
       return KategoriModel.fromJson(json);
     } else {
-      throw Exception('Failed to load posts');
+      throw Exception('Failed to load kategori');
     }
   }
 
-  // Get single post by ID
-  static Future<DataKategori> showPost(int id) async {
+  // Create kategori
+  static Future<bool> createKategori(String nama) async {
     final token = await getToken();
-    final response = await http.get(
-      Uri.parse('$baseUrl/$id'),
-      headers: {HttpHeaders.authorizationHeader: 'Bearer $token'},
+    final response = await http.post(
+      Uri.parse(baseUrl),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+      body: jsonEncode({'nama': nama}),
     );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return DataKategori.fromJson(data['data']);
-    } else {
-      throw Exception('Failed to load post');
-    }
-  }
-
-  // Create new post
-  static Future<bool> createPost(
-    String nama,
-  ) async {
-    final token = await getToken();
-    final uri = Uri.parse(baseUrl);
-    final request = http.MultipartRequest('POST', uri);
-
-    request.fields['nama'] = nama;
-
-    request.headers['Authorization'] = 'Bearer $token';
-
-    final response = await request.send();
     return response.statusCode == 201;
   }
 
-  // Update existing post
-  static Future<bool> updatePost(
-    int id,
-    String nama,
-  ) async {
+  // Update kategori
+  static Future<bool> updateKategori(int id, String nama) async {
     final token = await getToken();
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse('$baseUrl/$id?_method=PUT'),
+    final response = await http.put(
+      Uri.parse('$baseUrl/$id'),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+      body: jsonEncode({'nama': nama}),
     );
-
-    request.fields['nama'] = nama;
-
-    request.headers['Authorization'] = 'Bearer $token';
-
-    final response = await request.send();
     return response.statusCode == 200;
   }
 
-  // Delete post
-  static Future<bool> deletePost(int id) async {
+  // Delete kategori
+  static Future<bool> deleteKategori(int id) async {
     final token = await getToken();
     final response = await http.delete(
       Uri.parse('$baseUrl/$id'),

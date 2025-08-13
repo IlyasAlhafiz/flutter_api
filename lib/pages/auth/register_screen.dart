@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/pages/auth/login_screen.dart';
-import 'package:flutter_api/services/auth_service.dart';
+import 'package:flutter_api/services/auth_services.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -104,10 +104,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             MaterialPageRoute(
                               builder: (_) => const LoginScreen(),
                             ),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Registrasi Berhasil')),
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(

@@ -1,8 +1,8 @@
+import 'package:flutter_api/pages/perpustakaan/kategoris/create_kategori_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_api/models/kategori_model.dart';
 import 'package:flutter_api/services/kategori_service.dart';
-import 'package:flutter_api/pages/perpustakaan/kategori/detail_kategori.dart';
-import 'package:flutter_api/pages/perpustakaan/kategori/create_kategori.dart';
+
 
 class ListKategori extends StatefulWidget {
   const ListKategori({super.key});
@@ -17,13 +17,32 @@ class _ListKategoriState extends State<ListKategori> {
   @override
   void initState() {
     super.initState();
-    _futureKategori = KategoriService.listPosts();
+    _futureKategori = KategoriService.listKategoris();
   }
 
   void _refreshKategori() {
     setState(() {
-      _futureKategori = KategoriService.listPosts();
+      _futureKategori = KategoriService.listKategoris();
     });
+  }
+
+  Future<void> _hapusKategori(int id) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Konfirmasi'),
+        content: const Text('Yakin mau hapus kategori ini?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Hapus')),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await KategoriService.deleteKategori(id);
+      _refreshKategori();
+    }
   }
 
   @override
@@ -68,15 +87,29 @@ class _ListKategoriState extends State<ListKategori> {
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: ListTile(
                   title: Text(kategori.nama ?? 'Tanpa Nama'),
-                  onTap: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => KategoriDetail(post: kategori),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CreateKategori(
+                                kategori: kategori,
+                              ),
+                            ),
+                          );
+                          if (result == true) _refreshKategori();
+                        },
                       ),
-                    );
-                    if (result == true) _refreshKategori();
-                  },
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _hapusKategori(kategori.id ?? 0),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

@@ -1,6 +1,6 @@
+import 'package:flutter_api/pages/posts/edit_post_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_api/models/post_model.dart';
-import 'package:flutter_api/pages/posts/edit_post.dart';
 import 'package:flutter_api/services/post_service.dart';
 
 class PostDetailScreen extends StatefulWidget {
@@ -40,8 +40,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       final success = await PostService.deletePost(widget.post.id!);
       if (success && mounted) {
         Navigator.pop(context, true);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Post berhasil dihapus")));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Post berhasil dihapus")));
       }
       setState(() => _isLoading = false);
     }

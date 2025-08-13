@@ -1,9 +1,12 @@
-import 'dart:convert';
+
+//import 'dart:convert';
+import 'package:flutter_api/pages/posts/create_post_screen.dart';
+import 'package:flutter_api/pages/posts/detail_post_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_api/models/post_model.dart';
 import 'package:flutter_api/services/post_service.dart';
-import 'package:flutter_api/pages/posts/detail_post.dart';
-import 'package:flutter_api/pages/posts/create_post.dart';
+// import 'package:flutter_api/pages/posts/detail_posts_screen.dart';
+// import 'package:flutter_api/pages/posts/create_post_screen.dart';
 
 class ListPostScreen extends StatefulWidget {
   const ListPostScreen({super.key});

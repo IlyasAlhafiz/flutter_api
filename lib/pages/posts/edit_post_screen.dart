@@ -172,7 +172,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
               final success = await PostService.deletePost(widget.post.id!);
               if (!mounted) return;
               setState(() => _isLoading = false);
-              if (success) Navigator.pop(context, 'deleted');
+              Navigator.pop(context, 'deleted');
             },
             child: const Text("Delete", style: TextStyle(color: Colors.red)),
           ),
